@@ -106,13 +106,13 @@ async function capture(port, tabId, scrollHeight) {
             
             const canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
-            canvas.width = Math.ceil(850 * dpr);
-            canvas.height = Math.ceil(scrollHeight * dpr);
+            canvas.width = Math.floor(850 * dpr);
+            canvas.height = Math.floor(scrollHeight * dpr);
             for (let i = segments - 1; i >= 0; i--) {
                 await new Promise((resolve) => {
                     var image = new Image();
-                    image.width = Math.ceil(tabWidth * dpr);
-                    image.height = Math.ceil(tabHeight * dpr);
+                    image.width = Math.floor(tabWidth * dpr);
+                    image.height = Math.floor(tabHeight * dpr);
                     image.onload = function () {
                         // context.drawImage(image, 0, 0, 850, tabHeight, 0, tabHeight * i, 850, tabHeight);
                         // console.log('image', image.width, image.height);
@@ -120,11 +120,11 @@ async function capture(port, tabId, scrollHeight) {
                             //last is likely not the full height
                             const remainder = scrollHeight % tabHeight;
                             /* If no scrolling, do not cut off. */
-                            const cutOff = segments === 1 ? 0 : Math.ceil((tabHeight - remainder) * dpr);
+                            const cutOff = segments === 1 ? 0 : Math.floor((tabHeight - remainder) * dpr);
                             // context.drawImage(image, 0, cutOff, tabWidth, remainder, 0, tabHeight * i, tabWidth, remainder);
-                            context.drawImage(image, 0, Math.ceil(tabHeight * i * dpr) - cutOff, Math.ceil(tabWidth*dpr), Math.ceil(tabHeight * dpr));
+                            context.drawImage(image, 0, Math.floor(tabHeight * i * dpr) - cutOff, Math.floor(tabWidth*dpr), Math.floor(tabHeight * dpr));
                         } else {
-                            context.drawImage(image, 0, Math.ceil(tabHeight * i * dpr), Math.ceil(tabWidth * dpr), Math.ceil(tabHeight * dpr));
+                            context.drawImage(image, 0, Math.floor(tabHeight * i * dpr), Math.floor(tabWidth * dpr), Math.floor(tabHeight * dpr));
                         }
                         // context.drawImage(image, 0, tabHeight * i, tabWidth, tabHeight);
                         resolve();
