@@ -1,0 +1,20 @@
+{
+  "name": "chatGPT screenshot",
+  "action": {},
+  "manifest_version": 3,
+  "version": "0.1",
+  "description": "Take a nice screenshot of the whole chat GPT conversation",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chat.openai.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
