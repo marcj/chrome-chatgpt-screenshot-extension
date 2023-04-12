@@ -88,6 +88,7 @@ async function capture(port, tabId, scrollHeight) {
     console.log('visible height', tab.height);
     console.log('max height', scrollHeight);
     console.log('segments', segments);
+    
     for (let i = 0; i < segments; i++) {
         images.push(await captureSegment(port, tabId, tab.height * i));
         await sleep(510);
@@ -98,28 +99,32 @@ async function capture(port, tabId, scrollHeight) {
         target: {tabId},
         args: [tab.width, tab.height, segments, images, scrollHeight],
         async function(tabWidth, tabHeight, segments, images, scrollHeight) {
+    
             // console.log('wtf', tabWidth, tabHeight);
+            
+            var dpr = window.devicePixelRatio; // E.g. "1.5" as a float.
+            
             const canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
-            canvas.width = 850;
-            canvas.height = scrollHeight;
+            canvas.width = Math.floor(850 * dpr);
+            canvas.height = Math.floor(scrollHeight * dpr);
             for (let i = segments - 1; i >= 0; i--) {
                 await new Promise((resolve) => {
                     var image = new Image();
-                    image.width = tabWidth;
-                    image.height = tabHeight;
+                    image.width = Math.floor(tabWidth * dpr);
+                    image.height = Math.floor(tabHeight * dpr);
                     image.onload = function () {
                         // context.drawImage(image, 0, 0, 850, tabHeight, 0, tabHeight * i, 850, tabHeight);
                         // console.log('image', image.width, image.height);
                         if (i === segments - 1) {
                             //last is likely not the full height
                             const remainder = scrollHeight % tabHeight;
-							/* If no scrolling, do not cut off. */
-                            const cutOff = segments === 1 /*&& tabHeight>scrollHeight*/ ? 0 : tabHeight - remainder;
+                            /* If no scrolling, do not cut off. */
+                            const cutOff = segments === 1 ? 0 : Math.floor((tabHeight - remainder) * dpr);
                             // context.drawImage(image, 0, cutOff, tabWidth, remainder, 0, tabHeight * i, tabWidth, remainder);
-                            context.drawImage(image, 0, tabHeight * i - cutOff, tabWidth, tabHeight);
+                            context.drawImage(image, 0, Math.floor(tabHeight * i * dpr) - cutOff, Math.floor(tabWidth*dpr), Math.floor(tabHeight * dpr));
                         } else {
-                            context.drawImage(image, 0, tabHeight * i, tabWidth, tabHeight);
+                            context.drawImage(image, 0, Math.floor(tabHeight * i * dpr), Math.floor(tabWidth * dpr), Math.floor(tabHeight * dpr));
                         }
                         // context.drawImage(image, 0, tabHeight * i, tabWidth, tabHeight);
                         resolve();
@@ -153,12 +158,12 @@ async function prePage() {
             max-width: 850px;
         }
         
-		/* Hide left history & Co. sidebar. */
+        /* Hide left history & Co. sidebar. */
         body.screenshotGpt > div > div > div:first-child {
             display: none;
         }
         
-		/* Show content area. */
+        /* Show content area. */
         body.screenshotGpt > div > div > div:last-child {
             padding-left: unset;
         }
@@ -166,18 +171,18 @@ async function prePage() {
         body.screenshotGpt main {
             display: block;
         }
-		
-		/* Bonus: Hide "Model: GPT-4" etc. top row. */
+        
+        /* Bonus: Hide "Model: GPT-4" etc. top row. */
         body.screenshotGpt main > div > div > div > div > div:first-child {
             display: none;
         }
         
-		/* Bonus: Hide text box area content. */
+        /* Bonus: Hide text box area content. */
         body.screenshotGpt main > div:last-child {
             display: none;
         }
-		
-		/* Bonus: Hide text box area outer. */
+        
+        /* Bonus: Hide text box area outer. */
         body.screenshotGpt main > div > div > div > div > div:last-child {
             display: none;
         }
