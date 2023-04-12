@@ -114,7 +114,7 @@ async function capture(port, tabId, scrollHeight) {
                         if (i === segments - 1) {
                             //last is likely not the full height
                             const remainder = scrollHeight % tabHeight;
-							/* If no scrolling, do not cut off. */
+                            /* If no scrolling, do not cut off. */
                             const cutOff = segments === 1 /*&& tabHeight>scrollHeight*/ ? 0 : tabHeight - remainder;
                             // context.drawImage(image, 0, cutOff, tabWidth, remainder, 0, tabHeight * i, tabWidth, remainder);
                             context.drawImage(image, 0, tabHeight * i - cutOff, tabWidth, tabHeight);
@@ -153,12 +153,12 @@ async function prePage() {
             max-width: 850px;
         }
         
-		/* Hide left history & Co. sidebar. */
+        /* Hide left history & Co. sidebar. */
         body.screenshotGpt > div > div > div:first-child {
             display: none;
         }
         
-		/* Show content area. */
+        /* Show content area. */
         body.screenshotGpt > div > div > div:last-child {
             padding-left: unset;
         }
@@ -166,18 +166,18 @@ async function prePage() {
         body.screenshotGpt main {
             display: block;
         }
-		
-		/* Bonus: Hide "Model: GPT-4" etc. top row. */
+        
+        /* Bonus: Hide "Model: GPT-4" etc. top row. */
         body.screenshotGpt main > div > div > div > div > div:first-child {
             display: none;
         }
         
-		/* Bonus: Hide text box area content. */
+        /* Bonus: Hide text box area content. */
         body.screenshotGpt main > div:last-child {
             display: none;
         }
-		
-		/* Bonus: Hide text box area outer. */
+        
+        /* Bonus: Hide text box area outer. */
         body.screenshotGpt main > div > div > div > div > div:last-child {
             display: none;
         }
