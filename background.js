@@ -88,6 +88,7 @@ async function capture(port, tabId, scrollHeight) {
     console.log('visible height', tab.height);
     console.log('max height', scrollHeight);
     console.log('segments', segments);
+    
     for (let i = 0; i < segments; i++) {
         images.push(await captureSegment(port, tabId, tab.height * i));
         await sleep(510);
@@ -98,16 +99,20 @@ async function capture(port, tabId, scrollHeight) {
         target: {tabId},
         args: [tab.width, tab.height, segments, images, scrollHeight],
         async function(tabWidth, tabHeight, segments, images, scrollHeight) {
+    
             // console.log('wtf', tabWidth, tabHeight);
+            
+            var dpr = window.devicePixelRatio; // E.g. "1.5" as a float.
+            
             const canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
-            canvas.width = 850;
-            canvas.height = scrollHeight;
+            canvas.width = Math.ceil(850 * dpr);
+            canvas.height = Math.ceil(scrollHeight * dpr);
             for (let i = segments - 1; i >= 0; i--) {
                 await new Promise((resolve) => {
                     var image = new Image();
-                    image.width = tabWidth;
-                    image.height = tabHeight;
+                    image.width = Math.ceil(tabWidth * dpr);
+                    image.height = Math.ceil(tabHeight * dpr);
                     image.onload = function () {
                         // context.drawImage(image, 0, 0, 850, tabHeight, 0, tabHeight * i, 850, tabHeight);
                         // console.log('image', image.width, image.height);
@@ -115,11 +120,11 @@ async function capture(port, tabId, scrollHeight) {
                             //last is likely not the full height
                             const remainder = scrollHeight % tabHeight;
                             /* If no scrolling, do not cut off. */
-                            const cutOff = segments === 1 /*&& tabHeight>scrollHeight*/ ? 0 : tabHeight - remainder;
+                            const cutOff = segments === 1 ? 0 : Math.ceil((tabHeight - remainder) * dpr);
                             // context.drawImage(image, 0, cutOff, tabWidth, remainder, 0, tabHeight * i, tabWidth, remainder);
-                            context.drawImage(image, 0, tabHeight * i - cutOff, tabWidth, tabHeight);
+                            context.drawImage(image, 0, Math.ceil(tabHeight * i * dpr) - cutOff, Math.ceil(tabWidth*dpr), Math.ceil(tabHeight * dpr));
                         } else {
-                            context.drawImage(image, 0, tabHeight * i, tabWidth, tabHeight);
+                            context.drawImage(image, 0, Math.ceil(tabHeight * i * dpr), Math.ceil(tabWidth * dpr), Math.ceil(tabHeight * dpr));
                         }
                         // context.drawImage(image, 0, tabHeight * i, tabWidth, tabHeight);
                         resolve();
